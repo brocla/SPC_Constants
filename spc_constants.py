@@ -103,11 +103,21 @@ class SPC_Constants:
             raise ValueError(
                 f"Sample size n must be greater than or equal to 2, not {n}"
             )
-        self.n = n
+        self._sample_size = n
 
         if z <= 0:
             raise ValueError(f"z argument must be positive, not {z}")
-        self.z = z
+        self._sigma_limit = z
+
+    # `n` is read-only
+    @property
+    def n(self):
+        return self._sample_size
+
+    # `z` is read-only
+    @property
+    def z(self):
+        return self._sigma_limit
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.n}, z={self.z})"
@@ -260,12 +270,12 @@ if __name__ == "__main__":
     print(spc)
     print()
 
-    header = f"{'n':>6s}  {'d2':8s}  {'d3':8s}  {'c4':8s}  {'A2':8s}  {'A3':8s}  {'B3':8s}  {'B4':8s}  {'D3':8s}  {'D4':8s}"
+    header = f"{'n':>6s}  {'z':<4s}  {'d2':8s}  {'d3':8s}  {'c4':8s}  {'A2':8s}  {'A3':8s}  {'B3':8s}  {'B4':8s}  {'D3':8s}  {'D4':8s}"
     print(header)
     for n in range(2, 16):
         spc = SPC_Constants(n)
         print(
-            f"{n:6d}  {spc.d2:8f}  {spc.d3:8f}  {spc.c4:8f}  {spc.A2:8f}  {spc.A3:8f}  {spc.B3:8f}  {spc.B4:8f}  {spc.D3:8f}  {spc.D4:8f}"
+            f"{n:6d}  {spc.z:4.2f}  {spc.d2:8f}  {spc.d3:8f}  {spc.c4:8f}  {spc.A2:8f}  {spc.A3:8f}  {spc.B3:8f}  {spc.B4:8f}  {spc.D3:8f}  {spc.D4:8f}"
         )
         if not n % 5:
             print()
