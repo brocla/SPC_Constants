@@ -1,2 +1,5 @@
 *.pyc
 *.shelve
+*.dbm
+*.dbm-wal
+*.dbm-shm

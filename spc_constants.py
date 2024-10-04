@@ -41,6 +41,10 @@ E3         I-Ms Chart
 where `n` is the sample size,
 and `z` is the multiplier of standard error. The default is a 3 sigma limit.
 
+Note: `n` is traditionally an integer because sample size is a counting number, 
+but the equations don't require it, so float values of `n` are allowed.
+I don't know what an application might be.
+
 References:
 - "Statistical Quality Control" by Montgomery. See table 6.9
 - SAS documentation. https://support.sas.com/en/documentation.html
@@ -54,29 +58,41 @@ import numpy as np
 from scipy.stats import norm
 from scipy.integrate import quad
 from scipy.special import gammaln
-import shelve
 from functools import wraps, cached_property
+import dbm
 
 
-def shelve_it(file_name):
+def persistent_cache(db_path):
     """
-    Decorator to persist a cache across runs.
+    A decorator that caches method results using a persistent dbm-based cache.
     """
-    d = shelve.open(file_name)
-    print("::: opening file")
+    db = dbm.open(db_path, "c")
+
+    def _encode(item):
+        """Encode as a string."""
+        return f"{item}"
+
+    def _decode(_bytes):
+        """Decode dbm bytes back to a float."""
+        return float(_bytes.decode())
 
     def decorator(func):
         @wraps(func)
-        def new_func(self):
-            s_param = str(self.n)
-            print("::: s_param before membership check", s_param)
-            if s_param not in d:
-                print(":::, s_param not in d", s_param)
-                d[s_param] = func(self)
-            print("::: returning ", d[s_param])
-            return d[s_param]
+        def wrapper(self):
+            key = self.n
+            encoded_key = _encode(key)
 
-        return new_func
+            if encoded_key in db:
+                # cache hit
+                return _decode(db[encoded_key])
+            
+            value = func(self)
+
+            # Cache the result
+            db[encoded_key] = _encode(value)
+            return value
+
+        return wrapper
 
     return decorator
 
@@ -105,7 +121,7 @@ class SPC_Constants:
         )
 
     @property
-    @shelve_it(".cache.d2.shelve")
+    @persistent_cache(".cache.d2.dbm")
     def d2(self):
         r"""
         Math equation for d2 (written in LaTex).
@@ -125,7 +141,7 @@ class SPC_Constants:
         return result
 
     @property
-    @shelve_it(".cache.d3.shelve")
+    @persistent_cache(".cache.d3.dbm")
     def d3(self):
         r"""
         Double integral Math equation for d3 (written in LaTex).
@@ -163,7 +179,7 @@ class SPC_Constants:
         return result
 
     @property
-    @shelve_it(".cache.c4.shelve")
+    @persistent_cache(".cache.c4.dbm")
     def c4(self):
         r"""
         Math equation for c4 (written in LaTex).
