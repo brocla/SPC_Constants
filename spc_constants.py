@@ -41,6 +41,9 @@ E3         I-Ms Chart
 where `n` is the sample size,
 and `z` is the multiplier of standard error. The default is a 3 sigma limit.
 
+Note: All the constants are read-only. 
+      And the arguments, n and z are read-only.
+
 Note: `n` is traditionally an integer because sample size is a counting number, 
 but the equations don't require it, so float values of `n` are allowed.
 I don't know what an application might be.
@@ -109,12 +112,10 @@ class SPC_Constants:
             raise ValueError(f"z argument must be positive, not {z}")
         self._sigma_limit = z
 
-    # `n` is read-only
     @property
     def n(self):
         return self._sample_size
 
-    # `z` is read-only
     @property
     def z(self):
         return self._sigma_limit
@@ -243,8 +244,7 @@ class SPC_Constants:
     @property
     @cache
     def B6(self):
-        c4 = self.c4
-        return c4 + self.z * np.sqrt(1 - c4**2)
+        return self.c4 + self.z * np.sqrt(1 - self.c4**2)
 
     @property
     @cache
