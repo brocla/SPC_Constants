@@ -124,6 +124,48 @@ def test_non_positive_z_invalid():
     with pytest.raises(ValueError):
         SPC_Constants(2, z=0)
 
+def test_read_only():
+    const = SPC_Constants(2)
+    with pytest.raises(AttributeError):
+        const.n = 42
+    with pytest.raises(AttributeError):
+        const.z = 42
+    with pytest.raises(AttributeError):
+        const.c4 = 42
+    with pytest.raises(AttributeError):
+        const.c5 = 42
+    with pytest.raises(AttributeError):
+        const.d2 = 42
+    with pytest.raises(AttributeError):
+        const.d3 = 42
+    with pytest.raises(AttributeError):
+        const.A  = 42
+    with pytest.raises(AttributeError):
+        const.A2 = 42
+    with pytest.raises(AttributeError):
+        const.A3 = 42
+    with pytest.raises(AttributeError):        
+        const.B3 = 42
+    with pytest.raises(AttributeError):        
+        const.B4 = 42
+    with pytest.raises(AttributeError):          
+        const.B5 = 42
+    with pytest.raises(AttributeError):
+        const.B6 = 42
+    with pytest.raises(AttributeError):
+        const.D1 = 42
+    with pytest.raises(AttributeError):
+        const.D2 = 42
+    with pytest.raises(AttributeError):
+        const.D3 = 42
+    with pytest.raises(AttributeError):
+        const.D4 = 42
+    with pytest.raises(AttributeError):
+        const.E2 = 42
+    with pytest.raises(AttributeError):
+        const.E3 = 42
+
+
 def test_A_constant():
     # A = z / sqrt(n)
     for z in [2.5, 3.0, 3.5]:

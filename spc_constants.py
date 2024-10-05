@@ -58,7 +58,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy.integrate import quad
 from scipy.special import gammaln
-from functools import wraps, cached_property
+from functools import wraps, cached_property, cache
 import dbm
 
 
@@ -85,7 +85,7 @@ def persistent_cache(db_path):
             if encoded_key in db:
                 # cache hit
                 return _decode(db[encoded_key])
-            
+
             value = func(self)
 
             # Cache the result
@@ -205,60 +205,74 @@ class SPC_Constants:
         gamma_ratio = np.exp(gammaln(n / 2) - gammaln((n - 1) / 2))
         return np.sqrt(2 / (n - 1)) * gamma_ratio
 
-    @cached_property
+    @property
+    @cache
     def c5(self):
         return np.sqrt(1 - self.c4**2)
 
-    @cached_property
+    @property
+    @cache
     def A(self):
         return self.z / np.sqrt(self.n)
 
-    @cached_property
+    @property
+    @cache
     def A2(self):
         return self.z / self.d2 / np.sqrt(self.n)
 
-    @cached_property
+    @property
+    @cache
     def A3(self):
         return self.z / self.c4 / np.sqrt(self.n)
 
-    @cached_property
+    @property
+    @cache
     def B3(self):
         return max(0, 1 - (self.z / self.c4) * np.sqrt(1 - self.c4**2))
 
-    @cached_property
+    @property
+    @cache
     def B4(self):
         return 1 + (self.z / self.c4) * np.sqrt(1 - self.c4**2)
 
-    @cached_property
+    @property
+    @cache
     def B5(self):
         return max(0, self.c4 - self.z * np.sqrt(1 - self.c4**2))
 
-    @cached_property
+    @property
+    @cache
     def B6(self):
         c4 = self.c4
         return c4 + self.z * np.sqrt(1 - c4**2)
 
-    @cached_property
+    @property
+    @cache
     def D1(self):
         return max(0, self.d2 - self.z * self.d3)
 
-    @cached_property
+    @property
+    @cache
     def D2(self):
         return self.d2 + self.z * self.d3
 
-    @cached_property
+    @property
+    @cache
     def D3(self):
         return max(0, 1 - self.z * self.d3 / self.d2)
 
-    @cached_property
+    @property
+    @cache
     def D4(self):
         return 1 + self.z * self.d3 / self.d2
 
-    @cached_property
+    @property
+    @cache
     def E2(self):
         return self.z / self.d2
 
-    @cached_property
+    @property
+    @cache
     def E3(self):
         return self.z / self.c4
 
