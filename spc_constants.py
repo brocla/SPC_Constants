@@ -61,7 +61,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy.integrate import quad
 from scipy.special import gammaln
-from functools import wraps, cached_property, cache
+from functools import wraps, cache
 import dbm
 
 
@@ -293,3 +293,16 @@ if __name__ == "__main__":
         )
         if not n % 5:
             print()
+
+    def Xbar_limits(Xbarbar, Rbar, spc):
+        return Xbarbar - spc.A2 * Rbar, Xbarbar, Xbarbar + spc.A2 * Rbar
+    def Rbar_limits(Rbar, spc):
+        return spc.D3 * Rbar, Rbar, spc.D4 * Rbar
+    
+    spc = SPC_Constants(5)
+    LCLx, CLx, UCLx = Xbar_limits(0, 1, spc)
+    print(f'{UCLx = :6.3f}\n{ CLx = :6.3f}\n{LCLx = :6.3f}')
+
+    LCLr, CLr, UCLr = Rbar_limits(1, spc)
+    print(f'{UCLr = :6.3f}\n{ CLr = :6.3f}\n{LCLr = :6.3f}')
+

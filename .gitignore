@@ -3,3 +3,6 @@
 *.dbm
 *.dbm-wal
 *.dbm-shm
+.venv/*
+.pytest_cache/*
+pytest.ini
