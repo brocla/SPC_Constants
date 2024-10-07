@@ -5,6 +5,108 @@ import math
 from spc_constants import SPC_Constants
    
 
+### INVARIANTS ###
+#
+# For several pairs of constants, their sums and differences are invariants. This is used to test the code for consistency.
+# The invariants do not hold if the constant was truncated to have a value of zero. This is checked, and skipped. 
+
+@pytest.mark.invariant
+def test_D1_D2_invariant_plus():
+    for z in [ 1.5, 2, 3, 4, 4.5]:
+        for n in [2, 5, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            D1 = const.D1
+            D2 = const.D2
+            if D1:
+                computed = (D1 + D2)/const.d2
+                assert computed == pytest.approx(expected, rel=1e-8), f"D1,D2 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_D1_D2_invariant_minus():
+    for z in [ 1.5, 2, 3, 4, 4.5]:
+        for n in [2, 5, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            D1 = const.D1
+            D2 = const.D2
+            if D1:
+                computed = (D2 - D1)/z/const.d3
+                assert computed == pytest.approx(expected, rel=1e-8), f"D1,D2 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_D3_D4_invariant_plus():
+    for z in [ 1.5, 2, 3, 4, 4.5]:
+        for n in [2, 5, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2.0
+            D3 = const.D3
+            D4 = const.D4
+            if D3:
+                computed = D3 + D4
+                assert computed == pytest.approx(expected, rel=1e-8), f"D3,D4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_D3_D4_invariant_minus():
+    for z in [ 1.5, 2, 3, 4, 4.5]:
+        for n in [7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            D3 = const.D3
+            D4 = const.D4
+            if D3:
+                computed = (D4 - D3)*const.d2/const.d3/z
+                assert computed == pytest.approx(expected, rel=1e-8), f"D3,D4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_B3_B4_invariant_plus():
+    for z in [ 1.5, 2, 3, 4, 4.5]:
+        for n in [6, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            B3 = const.B3
+            B4 = const.B4
+            if B3:
+                computed = B3 + B4
+                assert computed == pytest.approx(expected, rel=1e-8), f"B3,B4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_B3_B4_invariant_minus():
+    for z in [2.5, 3.0, 3.5]:
+        for n in [6, 7, 10, 13, 15, 17, 23, 25, 50, 100]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            B3 = const.B3
+            B4 = const.B4
+
+            # invariant test does not work if B3 was set to zero. Skip
+            if B3:
+                computed = (B4 - B3) * const.c4 / const.c5 / z
+                assert computed == pytest.approx(expected, rel=1e-8), f"B3,B4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_B5_B6_invariant_plus():
+    for z in [ 1.5, 2, 3, 3.1, 4, 4.5]:
+        for n in [6, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            B5 = const.B5
+            B6 = const.B6
+            if B5:
+                computed = (const.B5 + const.B6)/const.c4
+                assert computed == pytest.approx(expected, rel=1e-8), f"B5,B6 invariant. For n={n}, z={z} expected {expected}, got {computed}"
+
+@pytest.mark.invariant
+def test_B5_B6_invariant_minus():
+    for z in [ 1.5, 2, 3, 3.1, 4, 4.5]:
+        for n in [6, 7, 10, 15, 25]:
+            const = SPC_Constants(n, z=z)
+            expected = 2
+            B5 = const.B5
+            B6 = const.B6
+            if B5:
+                computed = (const.B6 - const.B5)/const.c5/z
+                assert computed == pytest.approx(expected, rel=1e-8), f"B5,B6 invariant. For n={n}, z={z} expected {expected}, got {computed}"
 REFERENCE_VALUES = {
     'd2': {
         2: 1.128379,
@@ -303,106 +405,3 @@ def test_E3_constant():
             c4 = const.c4
             expected = z / c4
             assert computed == pytest.approx(expected, rel=1e-6), f"E3_constant({n}, z={z}) should be approximately {expected}, got {computed}"
-
-### INVARIANTS ###
-#
-# For several pairs of constants, their sums and differences are invariants. This is used to test the code for consistency.
-# The invariants do not hold if the constant was truncated to have a value of zero. This is checked, and skipped. 
-
-@pytest.mark.invariant
-def test_D1_D2_invariant_plus():
-    for z in [ 1.5, 2, 3, 4, 4.5]:
-        for n in [2, 5, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            D1 = const.D1
-            D2 = const.D2
-            if D1:
-                computed = (D1 + D2)/const.d2
-                assert computed == pytest.approx(expected, rel=1e-8), f"D1,D2 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_D1_D2_invariant_minus():
-    for z in [ 1.5, 2, 3, 4, 4.5]:
-        for n in [2, 5, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            D1 = const.D1
-            D2 = const.D2
-            if D1:
-                computed = (D2 - D1)/z/const.d3
-                assert computed == pytest.approx(expected, rel=1e-8), f"D1,D2 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_D3_D4_invariant_plus():
-    for z in [ 1.5, 2, 3, 4, 4.5]:
-        for n in [2, 5, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2.0
-            D3 = const.D3
-            D4 = const.D4
-            if D3:
-                computed = D3 + D4
-                assert computed == pytest.approx(expected, rel=1e-8), f"D3,D4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_D3_D4_invariant_minus():
-    for z in [ 1.5, 2, 3, 4, 4.5]:
-        for n in [7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            D3 = const.D3
-            D4 = const.D4
-            if D3:
-                computed = (D4 - D3)*const.d2/const.d3/z
-                assert computed == pytest.approx(expected, rel=1e-8), f"D3,D4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_B3_B4_invariant_plus():
-    for z in [ 1.5, 2, 3, 4, 4.5]:
-        for n in [6, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            B3 = const.B3
-            B4 = const.B4
-            if B3:
-                computed = B3 + B4
-                assert computed == pytest.approx(expected, rel=1e-8), f"B3,B4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_B3_B4_invariant_minus():
-    for z in [2.5, 3.0, 3.5]:
-        for n in [6, 7, 10, 13, 15, 17, 23, 25, 50, 100]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            B3 = const.B3
-            B4 = const.B4
-
-            # invariant test does not work if B3 was set to zero. Skip
-            if B3:
-                computed = (B4 - B3) * const.c4 / const.c5 / z
-                assert computed == pytest.approx(expected, rel=1e-8), f"B3,B4 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_B5_B6_invariant_plus():
-    for z in [ 1.5, 2, 3, 3.1, 4, 4.5]:
-        for n in [6, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            B5 = const.B5
-            B6 = const.B6
-            if B5:
-                computed = (const.B5 + const.B6)/const.c4
-                assert computed == pytest.approx(expected, rel=1e-8), f"B5,B6 invariant. For n={n}, z={z} expected {expected}, got {computed}"
-
-@pytest.mark.invariant
-def test_B5_B6_invariant_minus():
-    for z in [ 1.5, 2, 3, 3.1, 4, 4.5]:
-        for n in [6, 7, 10, 15, 25]:
-            const = SPC_Constants(n, z=z)
-            expected = 2
-            B5 = const.B5
-            B6 = const.B6
-            if B5:
-                computed = (const.B6 - const.B5)/const.c5/z
-                assert computed == pytest.approx(expected, rel=1e-8), f"B5,B6 invariant. For n={n}, z={z} expected {expected}, got {computed}"
